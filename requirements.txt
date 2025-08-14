@@ -1,0 +1,17 @@
+# Python dependencies for Cache Implementation Challenge
+
+# Core dependencies
+typing-extensions>=4.0.0
+
+# Benchmarking
+numpy>=1.21.0
+matplotlib>=3.5.0
+pandas>=1.3.0
+
+# Testing (optional)
+pytest>=7.0.0
+pytest-cov>=3.0.0
+
+# Performance profiling (optional)
+memory-profiler>=0.60.0
+line-profiler>=3.5.0
