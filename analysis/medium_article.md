@@ -73,7 +73,7 @@ When I explicitly requested Rust implementations from all models, the results re
 After implementing all caches, I ran comprehensive benchmarks with realistic workloads. The results were eye-opening:
 
 ![Performance Comparison Chart](round2.png)
-*The performance gap between implementations is significant - all implementations achieve good parallelism factors above 67x when handling shared workloads.*
+*The performance gap between implementations is dramatic - Rust achieves 6.6x higher throughput than Python due to true parallelism.*
 
 ### Fair Concurrent Benchmarks (100 workers, shared workload)
 
