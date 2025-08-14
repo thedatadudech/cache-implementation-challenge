@@ -6,7 +6,7 @@ A comprehensive comparison of AI-generated cache implementations across multiple
 
 | Model | Language | Score | Performance | Concurrency | Memory |
 |-------|----------|-------|-------------|-------------|---------|
-| **Claude Opus 4.1** | Python | 78/100 | Baseline | GIL-limited | 245 MB |
+| **Claude Opus 4** | Python | 78/100 | Baseline | GIL-limited | 245 MB |
 | **Qwen-30B** | Java | 82/100 | 3x faster | Good | 156 MB |
 | **Qwen-30B** | Rust | 85/100 | 6x faster | Good | 87 MB |
 | **Qwen-235B** | Rust | 91/100 | 7x faster | Good | 82 MB |

@@ -77,7 +77,7 @@ Rust 435B:   78 MB (most efficient)
 
 ## 📊 Detailed Scoring Breakdown
 
-### Claude Opus 4.1 - Python (78/100)
+### Claude Opus 4 - Python (78/100)
 ```python
 ✅ Functional Requirements (35/40)
    - LRU implementation: 8/10 (OrderedDict)

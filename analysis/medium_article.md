@@ -29,7 +29,7 @@ Build a Smart Cache System with:
 
 ## The Competitors
 
-- **Claude Opus 4.1** (Anthropic) - The thoughtful architect
+- **Claude Opus 4** (Anthropic) - The thoughtful architect
 - **Qwen-30B** (Alibaba) - The enterprise veteran  
 - **Qwen-235B** (Alibaba) - The creative engineer
 - **Qwen-435B** (Alibaba) - The performance optimizer
@@ -73,17 +73,19 @@ When I explicitly requested Rust implementations from all models, the results re
 After implementing all caches, I ran comprehensive benchmarks with realistic workloads. The results were eye-opening:
 
 ![Performance Comparison Chart](round2.png)
-*The performance gap between implementations is staggering - from Python's GIL-limited 0.22x parallelism to Rust's 5.2x speedup.*
+*The performance gap between implementations is significant - all implementations achieve good parallelism factors above 67x when handling shared workloads.*
 
 ### Fair Concurrent Benchmarks (100 workers, shared workload)
 
 ![Performance Comparison Table](performance_table.png)
-*Comprehensive performance metrics showing throughput, parallelism factor, and memory usage across all implementations.*
+*Performance metrics showing throughput and CPU efficiency - revealing the true parallelism capabilities of each implementation.*
 
-The parallelism factor reveals the truth about concurrency:
-- Python's GIL limits it to 0.22x - actually **slower** than sequential!
-- Java achieves real parallelism but with GC overhead
-- Rust implementations scale linearly with sophistication
+**Understanding CPU Efficiency:**
+- **Python (1.0%)**: The GIL limits Python to using only 1 CPU core despite having 100 threads. This is why Python's throughput is 6.6x slower than Rust.
+- **Java (25.9%)**: Achieves real parallelism, utilizing about 26 of 100 possible CPU cores effectively.
+- **Rust (7.3-28.9%)**: Varies by implementation sophistication, with Qwen-435B achieving the best CPU utilization.
+
+The low CPU efficiency across all implementations shows that cache operations are so fast (microseconds) that thread coordination overhead dominates. This is normal for in-memory operations - you'd see higher efficiency with slower operations like database queries.
 
 ### Single-Thread Performance (microseconds per operation)
 
@@ -193,10 +195,12 @@ Features (15 points)
 
 Python's Global Interpreter Lock destroyed concurrent performance:
 ```
-Parallelism Factor:
-Python:  0.22x (worse than sequential!)
-Java:    2.8x
-Rust:    5.2x
+Actual Concurrent Performance (ops/sec from benchmarks):
+Python:  43,798 ops/sec (GIL-limited, no true parallelism)
+Java:    258,793 ops/sec (real parallelism)
+Rust:    72,675-289,234 ops/sec (best parallelism)
+
+The "parallelism factor" in the table is misleading - it's actually a speedup calculation, not a measure of true parallel execution.
 ```
 
 ### 4. Architecture Patterns Emerge

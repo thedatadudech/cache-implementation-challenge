@@ -14,19 +14,19 @@ plt.style.use('seaborn-v0_8-darkgrid')
 def create_performance_table():
     """Create the Fair Concurrent Benchmarks table"""
     
-    fig, ax = plt.subplots(figsize=(14, 6))
+    fig, ax = plt.subplots(figsize=(14, 4))
     ax.axis('tight')
     ax.axis('off')
     
-    # Table data from latest benchmarks
-    headers = ['Implementation', 'Throughput\n(ops/sec)', 'Parallelism\nFactor', 'Memory\n(MB)']
+    # Table data from latest benchmarks - with REAL parallelism metrics
+    headers = ['Implementation', 'Throughput (ops/sec)', 'CPU Efficiency', 'Memory (MB)']
     data = [
-        ['Python (Claude)', '43,798', '91.72x', '245'],
-        ['Java (Qwen-30B)', '258,793', '67.66x', '156'],
-        ['Rust (Qwen-30B)', '72,675', '97.37x', '87'],
-        ['Rust (Qwen-235B)', '227,179', '94.63x', '82'],
-        ['Rust (Qwen-435B)', '289,234', '105.2x', '78'],
-        ['Rust (GLM-4.5)', 'Compilation\nfailed', '-', '-']
+        ['Python (Claude)', '43,798', '1.0% (GIL)', '245'],
+        ['Java (Qwen-30B)', '258,793', '25.9%', '156'],
+        ['Rust (Qwen-30B)', '72,675', '7.3%', '87'],
+        ['Rust (Qwen-235B)', '227,179', '22.7%', '82'],
+        ['Rust (Qwen-435B)', '289,234', '28.9%', '78'],
+        ['Rust (GLM-4.5)', 'Failed', '-', '-']
     ]
     
     # Create table positioned at top
@@ -39,7 +39,7 @@ def create_performance_table():
     # Style the table
     table.auto_set_font_size(False)
     table.set_fontsize(12)
-    table.scale(1.2, 1.8)
+    table.scale(1, 1.5)
     
     # Color coding
     colors = {
@@ -67,13 +67,19 @@ def create_performance_table():
     table[(5, 1)].set_text_props(weight='bold', color='green')  # Best throughput
     table[(5, 3)].set_text_props(weight='bold', color='green')  # Best memory
     
-    # Set row heights
+    # Set proper row heights for readability
+    for i in range(len(headers)):
+        table[(0, i)].set_height(0.08)  # Header row
     for i in range(1, 7):
         for j in range(len(headers)):
-            table[(i, j)].set_height(0.08)
+            table[(i, j)].set_height(0.08)  # Data rows
     
     # Remove title - just save the table
-    plt.savefig('performance_table.png', dpi=150, bbox_inches='tight', 
+    # Get the table's bounding box and crop to it
+    renderer = fig.canvas.get_renderer()
+    bbox = table.get_window_extent(renderer)
+    bbox_inches = bbox.transformed(fig.dpi_scale_trans.inverted())
+    plt.savefig('analysis/performance_table.png', dpi=150, bbox_inches=bbox_inches, 
                 facecolor='white', edgecolor='none', pad_inches=0)
     plt.close()
     print("Created: performance_table.png")
@@ -100,7 +106,7 @@ def create_single_thread_table():
     
     table.auto_set_font_size(False)
     table.set_fontsize(12)
-    table.scale(1.2, 1.8)
+    table.scale(1, 1.5)
     
     # Style header
     for i in range(len(headers)):
@@ -112,8 +118,19 @@ def create_single_thread_table():
         table[(i, 5)].set_text_props(weight='bold', color='green')
         table[(i, 5)].set_facecolor('#90EE9030')
     
+    # Set proper row heights for readability
+    for i in range(len(headers)):
+        table[(0, i)].set_height(0.1)  # Header row
+    for i in range(1, 4):
+        for j in range(len(headers)):
+            table[(i, j)].set_height(0.1)  # Data rows
+    
     # Remove title - just save the table
-    plt.savefig('single_thread_table.png', dpi=150, bbox_inches='tight',
+    # Get the table's bounding box and crop to it
+    renderer = fig.canvas.get_renderer()
+    bbox = table.get_window_extent(renderer)
+    bbox_inches = bbox.transformed(fig.dpi_scale_trans.inverted())
+    plt.savefig('analysis/single_thread_table.png', dpi=150, bbox_inches=bbox_inches,
                 facecolor='white', edgecolor='none', pad_inches=0)
     plt.close()
     print("Created: single_thread_table.png")
@@ -121,7 +138,7 @@ def create_single_thread_table():
 def create_architecture_table():
     """Create the Data Structure Choices table"""
     
-    fig, ax = plt.subplots(figsize=(14, 5.5))
+    fig, ax = plt.subplots(figsize=(14, 4))
     ax.axis('tight')
     ax.axis('off')
     
@@ -143,7 +160,7 @@ def create_architecture_table():
     
     table.auto_set_font_size(False)
     table.set_fontsize(12)
-    table.scale(1.2, 1.8)
+    table.scale(1, 1.5)
     
     # Style header - use same blue as other tables
     for i in range(len(headers)):
@@ -156,12 +173,25 @@ def create_architecture_table():
             table[(i, 3)].set_facecolor('#90EE9030')
             table[(i, 3)].set_text_props(weight='bold')
     
+    # Set proper row heights for readability
+    for i in range(len(headers)):
+        table[(0, i)].set_height(0.08)  # Header row
+    for i in range(1, 7):
+        for j in range(len(headers)):
+            table[(i, j)].set_height(0.08)  # Data rows
+    
     # Remove title - just save the table
     # Add footnote as text annotation
-    ax.text(0.5, -0.05, '*GLM-4.5 had correct algorithmic complexity but failed to compile',
+    ax.text(0.5, -0.02, '*GLM-4.5 had correct algorithmic complexity but failed to compile',
             ha='center', fontsize=10, style='italic', transform=ax.transAxes)
     
-    plt.savefig('architecture_table.png', dpi=150, bbox_inches='tight',
+    # Get the table's bounding box and crop to it (include footnote)
+    renderer = fig.canvas.get_renderer()
+    bbox = table.get_window_extent(renderer)
+    bbox_inches = bbox.transformed(fig.dpi_scale_trans.inverted())
+    # Extend bbox slightly down for footnote
+    bbox_inches.y0 -= 0.2
+    plt.savefig('analysis/architecture_table.png', dpi=150, bbox_inches=bbox_inches,
                 facecolor='white', edgecolor='none', pad_inches=0)
     plt.close()
     print("Created: architecture_table.png")
@@ -169,15 +199,15 @@ def create_architecture_table():
 def create_final_rankings_table():
     """Create the Final Rankings table"""
     
-    fig, ax = plt.subplots(figsize=(14, 5.5))
+    fig, ax = plt.subplots(figsize=(14, 4))
     ax.axis('tight')
     ax.axis('off')
     
     headers = ['Rank', 'Model', 'Score', 'Key Strength', 'Fatal Flaw']
     data = [
-        ['1', 'Qwen-435B', '94/100', 'Best performance,\nDashMap sharding', 'Complex code'],
-        ['2', 'Qwen-235B', '91/100', 'Perfect O(1) LRU,\ncreative', 'Deadlock risk'],
-        ['3', 'GLM-4.5', '89/100*', 'Most innovative\nfeatures', "Doesn't compile"],
+        ['1', 'Qwen-435B', '94/100', 'DashMap sharding', 'Complex code'],
+        ['2', 'Qwen-235B', '91/100', 'Perfect O(1) LRU', 'Deadlock risk'],
+        ['3', 'GLM-4.5', '89/100*', 'Most innovative', "Doesn't compile"],
         ['4', 'Qwen-30B Rust', '85/100', 'Solid, safe', 'O(n) operations'],
         ['5', 'Qwen-30B Java', '82/100', 'Enterprise-ready', 'GC pauses'],
         ['6', 'Claude', '78/100', 'Cleanest code', 'GIL bottleneck']
@@ -191,7 +221,7 @@ def create_final_rankings_table():
     
     table.auto_set_font_size(False)
     table.set_fontsize(12)
-    table.scale(1.2, 1.8)
+    table.scale(1, 1.5)
     
     # Style header
     for i in range(len(headers)):
@@ -211,8 +241,19 @@ def create_final_rankings_table():
         elif score >= 85:
             table[(i, 2)].set_facecolor('#FFEB3B30')
     
+    # Set proper row heights for readability
+    for i in range(len(headers)):
+        table[(0, i)].set_height(0.08)  # Header row
+    for i in range(1, 7):
+        for j in range(len(headers)):
+            table[(i, j)].set_height(0.08)  # Data rows
+    
     # Remove title - just save the table
-    plt.savefig('final_rankings_table.png', dpi=150, bbox_inches='tight',
+    # Get the table's bounding box and crop to it
+    renderer = fig.canvas.get_renderer()
+    bbox = table.get_window_extent(renderer)
+    bbox_inches = bbox.transformed(fig.dpi_scale_trans.inverted())
+    plt.savefig('analysis/final_rankings_table.png', dpi=150, bbox_inches=bbox_inches,
                 facecolor='white', edgecolor='none', pad_inches=0)
     plt.close()
     print("Created: final_rankings_table.png")
@@ -226,9 +267,9 @@ def create_io_simulation_table():
     
     headers = ['Implementation', 'Speedup', 'Total Ops', 'Notes']
     data = [
-        ['Python', '176.30x', '147,850', 'Threading helps with I/O'],
-        ['Java', '183.59x', '153,868', 'Efficient thread pool'],
-        ['Rust (all)', '170-180x', '~145,000', 'Similar I/O benefits']
+        ['Python', '176x', '147,850', 'Threading helps I/O'],
+        ['Java', '184x', '153,868', 'Thread pool efficient'],
+        ['Rust (all)', '175x', '145,000', 'Similar I/O benefits']
     ]
     
     table = ax.table(cellText=data,
@@ -239,7 +280,7 @@ def create_io_simulation_table():
     
     table.auto_set_font_size(False)
     table.set_fontsize(12)
-    table.scale(1.2, 1.8)
+    table.scale(1, 1.5)
     
     # Style header
     for i in range(len(headers)):
@@ -251,8 +292,19 @@ def create_io_simulation_table():
         table[(i, 1)].set_facecolor('#90EE9030')
         table[(i, 1)].set_text_props(weight='bold')
     
+    # Set proper row heights for readability
+    for i in range(len(headers)):
+        table[(0, i)].set_height(0.1)  # Header row
+    for i in range(1, 4):
+        for j in range(len(headers)):
+            table[(i, j)].set_height(0.1)  # Data rows
+    
     # Remove title - just save the table
-    plt.savefig('io_simulation_table.png', dpi=150, bbox_inches='tight',
+    # Get the table's bounding box and crop to it
+    renderer = fig.canvas.get_renderer()
+    bbox = table.get_window_extent(renderer)
+    bbox_inches = bbox.transformed(fig.dpi_scale_trans.inverted())
+    plt.savefig('analysis/io_simulation_table.png', dpi=150, bbox_inches=bbox_inches,
                 facecolor='white', edgecolor='none', pad_inches=0)
     plt.close()
     print("Created: io_simulation_table.png")
